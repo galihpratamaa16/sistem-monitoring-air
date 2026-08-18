@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER PANEL</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <div class='sidebar'>
+        <h2>AIR WARGA</h2>
+        <a href='#dashboard'>Dashboard</a>
+        <a href='#jadwal'>Jadwal</a>
+        <a href='#harga'>Harga</a>
+        <a href='#ip'>IP Slave</a>
+        <a href='#listrik'>Listrik</a>
+        <a href='#keuangan'>Laporan Keuangan</a>
+    </div>
+
+    <div class='main'>
+        <div id='laporan'>
+
+            <div class='header'>
+                <h1>SISTEM MONITORING POMPA AIR</h1>
+                <p>Kontrol Utama & Dashboard Pompa Air Bersih</p>
+                <p><b>IP Master:</b> <span id="displayIP">192.168.88.90</span></p>
+            </div>
+
+            <br>
+            <b>IP Master :</b> <span id="textIP">192.168.88.90</span>
+            <br>
+            <b>Status :</b> <span class='green'>ONLINE</span>
+            <hr>
+
+            <div class='container' id='dashboard'>
+
+                <!-- 4 KOTAK SUMMARY UTAMA -->
+                <div class='summary'>
+                    <div class='box' style='text-align:center;'>
+                        <h3>Total Air</h3>
+                        <h1><span id='webTotalAir'>0.00</span> L</h1>
+                    </div>
+                    <div class='box' style='text-align:center;'>
+                        <h3>Level Torn</h3>
+                        <h1><span id='webLevelAir'>0.0</span>%</h1>
+                    </div>
+                    <div class='box' style='text-align:center;'>
+                        <h3>Daya</h3>
+                        <h1><span id='webP'>0</span> W</h1>
+                    </div>
+                    <div class='box' style='text-align:center;'>
+                        <h3>Status</h3>
+                        <h1 id='webStatusPompaTop' class='red'>OFF</h1>
+                    </div>
+                </div>
+
+                <!-- Status Sistem -->
+                <div class='card'>
+                    <h2>Status Sistem</h2>
+                    <table>
+                        <tr><td><b>Mode</b></td><td><span id='webModeMasterText' class='blue'>AUTO</span></td></tr>
+                        <tr><td><b>Status Pompa</b></td><td><span id='webStatusPompaText' class='red'>OFF</span></td></tr>
+                    </table>
+                </div>
+
+                <!-- Torn Air -->
+                <div class='card'>
+                    <h2>Torn Air</h2>
+                    <table>
+                        <tr><td><b>Level Air</b></td><td><span id='webLevelAirDetail'>0.0</span> %</td></tr>
+                        <tr><td><b>Jarak Air</b></td><td><span id='webJarakAir'>0.00</span> cm</td></tr>
+                        <tr><td><b>TDS</b></td><td><span id='webTDS'>0</span> ppm</td></tr>
+                        <tr><td><b>Kualitas</b></td><td><span id='webStatusAir'>-</span></td></tr>
+                    </table>
+                </div>
+
+                <!-- Flow Meter -->
+                <div class='card'>
+                    <h2>Flow Meter</h2>
+                    <table>
+                        <tr><td><b>Debit Air</b></td><td><span id='webFlow0'>0.00</span> L/min</td></tr>
+                        <tr><td><b>Total Air</b></td><td><span id='webTotal0'>0.00</span> Liter</td></tr>
+                        <tr><td><b>Pulse</b></td><td><span id='webPulse0'>0</span></td></tr>
+                        <tr><td><b>Status Air</b></td><td><span id='webStatusFlow'>-</span></td></tr>
+                    </table>
+                </div>
+
+                <!-- Tagihan Air -->
+                <div class='card'>
+                    <h2>Tagihan Air</h2>
+                    <table>
+                        <tr><th>Rumah</th><th>m3</th><th>Total</th></tr>
+                        <tr><td>Rumah 1</td><td>0.000 m³</td><td id='tagihanR1'>Rp 0</td></tr>
+                        <tr><td>Rumah 2</td><td>0.000 m³</td><td id='tagihanR2'>Rp 0</td></tr>
+                    </table>
+                </div>
+
+                <!-- PZEM -->
+                <div class='card'>
+                    <h2>PZEM</h2>
+                    <table>
+                        <tr><td><b>Tegangan</b></td><td><span id='webV'>0.0</span> V</td></tr>
+                        <tr><td><b>Arus</b></td><td><span id='webI'>0.00</span> A</td></tr>
+                        <tr><td><b>Daya</b></td><td><span id='webPZEM'>0</span> W</td></tr>
+                        <tr><td><b>Energi</b></td><td><span id='webE'>0.00</span> kWh</td></tr>
+                        <tr><td><b>Frekuensi</b></td><td><span id='webF'>0.0</span> Hz</td></tr>
+                        <tr><td><b>Power Factor</b></td><td><span id='webPF'>0.00</span></td></tr>
+                    </table>
+                </div>
+
+                <!-- KONTROL POMPA (Menggunakan Fungsi JS kirimAksi) -->
+                <div class='card'>
+                    <h2>Kontrol Pompa</h2>
+                    <br>
+                    <button type="button" class='pdfBtn' onclick='downloadPDF()'>GENERATE PDF</button>
+                    <br><br>
+                    <div style='display: flex; flex-direction: column; align-items: center; gap: 12px;'>
+                        <div style='display: flex; gap: 12px;'>
+                            <button type="button" onclick="kirimAksi('/auto')">AUTO</button>
+                            <button type="button" onclick="kirimAksi('/manual')">MANUAL</button>
+                        </div>
+                        <div style='display: flex; gap: 12px;'>
+                            <button type="button" onclick="kirimAksi('/on')">ON</button>
+                            <button type="button" onclick="kirimAksi('/off')">OFF</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jadwal Pengisian Pompa -->
+                <div class='card card-wide' id='jadwal'>
+                    <h2>Jadwal Pengisian Pompa</h2>
+                    <p><b>RTC:</b> <span id='rtcStatus'>Sinkronisasi...</span></p>
+                    <p>Pompa akan ON pada <b id='teksMulai'>05:00</b> dan OFF pada <b id='teksSelesai'>06:00</b>.</p>
+                    <form onsubmit="kirimForm(event, '/saveSchedule')">
+                        <label>Waktu Pompa ON</label><br>
+                        <input type='time' id='inputMulai' name='mulai' required><br><br>
+                        <label>Waktu Pompa OFF</label><br>
+                        <input type='time' id='inputSelesai' name='selesai' required><br><br>
+                        <button type='submit'>Simpan Jadwal</button>
+                    </form><br>
+                    <div id='statusJadwalHTML'></div>
+                    <button type='button' onclick="kirimAksi('/disableSchedule')">Nonaktifkan Jadwal</button>
+                </div>
+
+                <!-- Harga Air -->
+                <div class='card' id='harga'>
+                    <h2>Harga Air</h2>
+                    <p>Harga saat ini: <b id='teksHargaAktif'>Rp 5.000 / m³</b></p>
+                    <form onsubmit="kirimForm(event, '/saveHarga')">
+                        <label>Masukkan harga per m³:</label><br><br>
+                        <input type='number' id='inputHarga' name='harga' min='1' step='1' required style='width:100%;padding:10px;font-size:16px;box-sizing:border-box;'>
+                        <br><br>
+                        <button type='submit'>Simpan Harga</button>
+                    </form>
+                </div>
+
+                <!-- IP Slave -->
+                <div class='card' id='ip'>
+                    <h2>IP Slave</h2>
+                    <p>Flow Slave          :192.168.88.100</p>
+                    <p>Contactor Slave     :192.168.88.120</p>
+                    <p>Ultrasonic Slave    :192.168.88.130</p>
+                    <p>PZEM Slave          :192.168.88.140</p>
+                </div>
+
+                <!-- Total Listrik -->
+                <div class='card' id='listrik'>
+                    <h2>Total Listrik</h2>
+                    <h1><span id='webListrikTotal'>0.00</span> kWh</h1>
+                </div>
+
+                <!-- SISTEM MANAJEMEN KEUANGAN -->
+                <div class='card card-wide' id='keuangan'>
+                    <h2>Laporan Keuangan</h2>
+                    <p>Pencatatan pemasukan, pengeluaran, dan neraca saldo.</p>
+                    <div class='summary'>
+
+                        <!-- 1. PEMASUKAN -->
+                        <div class='box'>
+                            <h3>Pemasukan</h3>
+                            <p><b>Total Tagihan Bulan Berjalan:</b><br><span id='valTagihanBulan'>Rp 0</span></p>
+                            <p><b>Total Pembayaran:</b><br><span id='valPembayaran'>Rp 0</span></p>
+                            <p><b>Total Tunggakan:</b><br><span class='red' id='valTunggakan'>Rp 0</span></p>
+                            <p><small><b>Jatuh Tempo Aktif:</b><br><span class='orange' id='valJatuhTempoStr'>2026-05-31 23:59</span></small></p>
+                            <hr>
+                            <p><b>Rekap Pemasukan:</b><br><span class='blue' id='valRekapTampil'>Rp 0</span></p>
+                            
+                            <form onsubmit="kirimForm(event, '/saveRekap')">
+                                <label><small>Input Rekap Pemasukan (Rp):</small></label>
+                                <input type='number' id='inputRekapVal' name='rekap' required>
+                                <button type='submit' style='width:100%;height:35px;'>Simpan Rekap</button>
+                            </form>
+
+                            <form onsubmit="kirimForm(event, '/saveJatuhTempo')" style='margin-top:10px;'>
+                                <label><small>Atur Jatuh Tempo Tunggakan:</small></label>
+                                <div style='display:flex;gap:4px;'>
+                                    <input type='number' name='tahun' value='2026' placeholder='Thn' style='width:35%;'>
+                                    <input type='number' name='bulan' value='5' placeholder='Bln' style='width:25%;'>
+                                    <input type='number' name='tanggal' value='31' placeholder='Tgl' style='width:25%;'>
+                                </div>
+                                <button type='submit' style='width:100%;height:35px;'>Set Jatuh Tempo</button>
+                            </form>
+
+                            <button type='button' onclick="kirimAksi('/resetPemasukan')" style='background:#dc2626;width:100%;height:35px;margin-top:10px;color:white;border:none;border-radius:6px;cursor:pointer;'>Reset Pemasukan</button>
+                        </div>
+
+                        <!-- 2. PENGELUARAN -->
+                        <div class='box'>
+                            <h3>Pengeluaran</h3>
+                            <form onsubmit="kirimForm(event, '/savePengeluaran')">
+                                <label><small>Tanggal (YYYY-MM-DD):</small></label>
+                                <input type='text' name='tanggal' placeholder='2026-05-10' required>
+                                <label><small>Nominal (Rp):</small></label>
+                                <input type='number' name='nominal' required>
+                                <label><small>Keterangan:</small></label>
+                                <input type='text' name='keterangan' placeholder='Listrik/Perawatan' required>
+                                <button type='submit' style='width:100%;height:35px;'>Tambah Pengeluaran</button>
+                            </form>
+                            <p><b>Total Pengeluaran:</b><br><span class='red' id='valTotalPengeluaran'>Rp 0</span></p>
+                            <div style='max-height:120px;overflow-y:auto;border:1px solid #eee;margin-top:5px;'><table id='tabelRiwayatPengeluaran'></table></div>
+
+                            <button type='button' onclick="kirimAksi('/resetPengeluaran')" style='background:#dc2626;width:100%;height:35px;margin-top:10px;color:white;border:none;border-radius:6px;cursor:pointer;'>Reset Pengeluaran</button>
+                        </div>
+
+                        <!-- 3. NERACA -->
+                        <div class='box'>
+                            <h3>Neraca</h3>
+                            <p><b>Total Pemasukan:</b><br><span id='neracaPemasukan'>Rp 0</span></p>
+                            <p><b>Total Pengeluaran:</b><br><span id='neracaPengeluaran'>Rp 0</span></p>
+                            <hr>
+                            <p><b>Saldo Berjalan:</b><br><h2 id='neracaSaldo' style='margin:5px 0;'>Rp 0</h2></p>
+
+                            <button type='button' onclick="kirimAksi('/resetNeraca')" style='background:#dc2626;width:100%;height:35px;margin-top:20px;color:white;border:none;border-radius:6px;cursor:pointer;'>Reset Neraca</button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src='script.js'></script>
+</body>
+</html>

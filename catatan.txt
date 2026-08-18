@@ -1,0 +1,10 @@
+baca dulu !!
+1. file .ino sebagai backend berfungsi untuk mengkomunikasikan data dari
+    masing masing slave 
+2. index.html sebagai kerangka halaman web master
+3. script.js logika untuk komunikasi .ino dengan halaman web
+
+Cara debugging
+1. Sebelum ngoding backup dulu seluruh kodingan di notepad
+2. jika sudah fix push ke github
+3. Jika kodingan menjadi acak acakan setelah di run salin kembali kodingan yang ada di notepad
