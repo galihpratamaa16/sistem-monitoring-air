@@ -8,3 +8,5 @@ Cara debugging
 1. Sebelum ngoding backup dulu seluruh kodingan di notepad
 2. jika sudah fix push ke github
 3. Jika kodingan menjadi acak acakan setelah di run salin kembali kodingan yang ada di notepad
+
+12345
