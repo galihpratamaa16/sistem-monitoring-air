@@ -176,6 +176,10 @@ void handleStatusAPI() {
     json += ",\"totalPengeluaran\":" + String(totalPengeluaran, 2);
     json += ",\"riwayatPengeluaran\":\"" + riwayatPengeluaran + "\"";
     json += ",\"tagihanBulan\":" + String(totalTagihanBulan, 2);
+    json += ",\"m3_0\":" + String(totalM3[0], 3);
+    json += ",\"tagihan_0\":" + String(totalTagihan[0], 2);
+    json += ",\"m3_1\":" + String(totalM3[1], 3);
+    json += ",\"tagihan_1\":" + String(totalTagihan[1], 2);
     json += "}";
     sendCORS(200, "application/json", json);
 }
