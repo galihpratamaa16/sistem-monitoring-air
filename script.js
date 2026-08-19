@@ -94,7 +94,7 @@ function updateStatusSistem() {
             if(valPembayaran) valPembayaran.innerText = formatRupiahJS(data.tagihanBulan);
 
             let valTunggakan = document.getElementById('valTunggakan');
-            if(valTunggakan) valTunggakan.innerText = formatRupiahJS(data.tagihanBulan);
+            if(valTunggakan) valTunggakan.innerText = formatRupiahJS(data.tunggakan);
 
             let rekapTampil = document.getElementById('valRekapTampil');
             let neracaPemasukan = document.getElementById('neracaPemasukan');
