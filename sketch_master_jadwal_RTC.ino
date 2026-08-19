@@ -201,6 +201,8 @@ void handleStatusAPI() {
     json += ",\"tagihan_1\":" + String(totalTagihan[1], 2);
     json += ",\"dueStr\":\"" + String(dueStr) + "\"";
     json += ",\"tunggakan\":" + String(totalTunggakan, 2);
+    json += ",\"liter_0\":" + String(totalLiter[0], 2);
+    json += ",\"liter_1\":" + String(totalLiter[1], 2);
     json += "}";
     
     sendCORS(200, "application/json", json);
