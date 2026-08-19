@@ -264,7 +264,45 @@ function updateFlow(){
 }
 setInterval(updateFlow, 3000);
 
-function downloadPDF(){
-    var element = document.getElementById('laporan');
-    html2pdf().from(element).save('Laporan_Air.pdf');
+function downloadPDF() {
+    // 1. Sinkronisasi data real-time ke dalam elemen template PDF
+    document.getElementById('pdfTeksHarga').innerText = document.getElementById('teksHargaAktif').innerText;
+    document.getElementById('pdfM3_0').innerText = document.getElementById('m3_0').innerText;
+    document.getElementById('pdfTagihan_0').innerText = document.getElementById('tagihan_0').innerText;
+    document.getElementById('pdfM3_1').innerText = document.getElementById('m3_1').innerText;
+    document.getElementById('pdfTagihan_1').innerText = document.getElementById('tagihan_1').innerText;
+    
+    document.getElementById('pdfRekap').innerText = document.getElementById('neracaPemasukan').innerText;
+    document.getElementById('pdfPengeluaran').innerText = document.getElementById('neracaPengeluaran').innerText;
+    
+    let saldoEl = document.getElementById('neracaSaldo');
+    let pdfSaldo = document.getElementById('pdfSaldo');
+    pdfSaldo.innerText = saldoEl.innerText;
+    pdfSaldo.style.color = saldoEl.style.color;
+
+    // Evaluasi statistik kondisi saldo untuk laporan
+    let teksSaldo = saldoEl.innerText;
+    let statusKondisi = document.getElementById('pdfStatusKondisi');
+    if (teksSaldo.includes("-")) {
+        statusKondisi.innerText = "Defisit (Pengeluaran melebihi pemasukan)";
+        statusKondisi.style.color = "#dc2626";
+    } else {
+        statusKondisi.innerText = "Surplus / Seimbang (Keuangan sehat)";
+        statusKondisi.style.color = "#16a34a";
+    }
+
+    // 2. Ambil elemen template PDF
+    var element = document.getElementById('pdf-report');
+
+    // 3. Konfigurasi format A4 menggunakan html2pdf
+    var opt = {
+        margin:       10, // mm
+        filename:     'Laporan Manajemen Air Warga.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // 4. Proses dan unduh PDF langsung
+    html2pdf().from(element).set(opt).save();
 }
