@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Fisik - Manajemen Air Warga</title>
+    <!-- Pustaka html2pdf untuk unduh langsung dari web -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            background: #475569;
+            margin: 0;
+            padding: 30px 0;
+            font-family: Arial, sans-serif;
+        }
+        /* Tombol Aksi di Luar Kertas */
+        .action-bar {
+            width: 210mm;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn {
+            padding: 10px 20px;
+            background: #1976D2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn:hover { background: #0D47A1; }
+        .btn-back { background: #64748b; }
+        .btn-back:hover { background: #475569; }
+
+        /* Format Kertas A4 */
+        .page-a4 {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 20mm;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            color: black;
+        }
+        h3 { color: #1565C0; font-size: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px; margin-top: 25px; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 15px; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
+        th { background: #f1f5f9; }
+    </style>
+</head>
+<body>
+
+    <!-- Tombol Navigasi & Download -->
+    <div class="action-bar">
+        <a href="index.html" class="btn btn-back">&larr; Kembali ke Dashboard</a>
+        <button class="btn" onclick="downloadPDF()">Unduh Laporan (PDF)</button>
+    </div>
+
+    <!-- Area Konten Utama Dokumen A4 -->
+    <div class="page-a4" id="areaLaporan">
+        
+        <!-- Kop Surat -->
+        <div style="text-align: center; border-bottom: 3px double #0f172a; padding-bottom: 12px; margin-bottom: 25px;">
+            <h2 style="margin: 0; color: #0f172a; font-size: 22px; text-transform: uppercase;">Laporan Manajemen Air Warga</h2>
+            <p style="margin: 5px 0 0; font-size: 13px; color: #555;">Pusat Kontrol, Tagihan, & Rekapitulasi Keuangan Air Bersih</p>
+        </div>
+
+        <!-- Bagian 1: Harga & Tagihan Air Warga -->
+        <div>
+            <h3>1. Informasi Harga & Tagihan Air Warga</h3>
+            <p style="margin: 5px 0 10px; font-size: 13px;"><b>Tarif Dasar Air:</b> <span id="lapTarif">Rp 5.000 / m³</span></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Rumah</th>
+                        <th>Nama Warga</th>
+                        <th>Volume (m³)</th>
+                        <th>Total Tagihan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rumah 1</td>
+                        <td>Kepala Keluarga 1</td>
+                        <td id="lapM3_0">0.000 m³</td>
+                        <td id="lapTagihan_0">Rp 0</td>
+                    </tr>
+                    <tr>
+                        <td>Rumah 2</td>
+                        <td>Kepala Keluarga 2</td>
+                        <td id="lapM3_1">0.000 m³</td>
+                        <td id="lapTagihan_1">Rp 0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Bagian 2: Laporan Keuangan -->
+        <div>
+            <h3>2. Laporan Keuangan & Neraca Saldo</h3>
+            <table>
+                <tr>
+                    <td style="width: 60%;"><b>Total Pemasukan (Rekap):</b></td>
+                    <td style="color: #16a34a; font-weight: bold;" id="lapRekap">Rp 0</td>
+                </tr>
+                <tr>
+                    <td><b>Total Pengeluaran:</b></td>
+                    <td style="color: #dc2626; font-weight: bold;" id="lapPengeluaran">Rp 0</td>
+                </tr>
+                <tr>
+                    <td><b>Saldo / Neraca Berjalan:</b></td>
+                    <td style="font-weight: bold;" id="lapSaldo">Rp 0</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Bagian 3: Statistik Keuangan -->
+        <div>
+            <h3>3. Statistik & Ringkasan Keuangan</h3>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 13px;">
+                <p style="margin: 4px 0;">• <b>Status Perbandingan:</b> Arus kas antara total pemasukan dan pengeluaran tercatat aktif.</p>
+                <p style="margin: 4px 0;">• <b>Kondisi Saldo:</b> <span id="lapStatusKondisi">Aman / Surplus</span></p>
+            </div>
+        </div>
+
+        <!-- Tanda Tangan / Footer Laporan -->
+        <div style="margin-top: 50px; display: flex; justify-content: flex-end; font-size: 13px;">
+            <div style="text-align: center; width: 200px;">
+                <p style="margin: 0;">Pengurus Manajemen Air</p>
+                <br><br><br>
+                <p style="margin: 0; font-weight: bold; border-bottom: 1px solid #000; display: inline-block; width: 160px;"></p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script Pengambilan Data Otomatis dari ESP32 & Fungsi Download -->
+    <script>
+        const ESP_IP = "http://192.168.88.90";
+
+        function formatRupiahJS(nilai) {
+            let isNeg = nilai < 0;
+            let angka = Math.abs(Math.round(nilai));
+            if (angka === 0) return "Rp 0";
+            let rev = angka.toString().split('').reverse().join('');
+            let ribuan = '';
+            for (let i = 0; i < rev.length; i++) {
+                ribuan += rev[i];
+                if ((i + 1) % 3 === 0 && (i + 1) !== rev.length) ribuan += '.';
+            }
+            let hasil = ribuan.split('').reverse().join('');
+            return (isNeg ? "-Rp " : "Rp ") + hasil;
+        }
+
+        // Ambil data langsung dari API ESP32 saat halaman dibuka
+        function loadDataLaporan() {
+            fetch(ESP_IP + '/api/status')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('lapTarif').innerText = formatRupiahJS(data.tarif) + " / m³";
+                    document.getElementById('lapM3_0').innerText = Number(data.m3_0).toFixed(3) + " m³";
+                    document.getElementById('lapTagihan_0').innerText = formatRupiahJS(data.tagihan_0);
+                    document.getElementById('lapM3_1').innerText = Number(data.m3_1).toFixed(3) + " m³";
+                    document.getElementById('lapTagihan_1').innerText = formatRupiahJS(data.tagihan_1);
+                    
+                    document.getElementById('lapRekap').innerText = formatRupiahJS(data.rekap);
+                    document.getElementById('lapPengeluaran').innerText = formatRupiahJS(data.totalPengeluaran);
+                    
+                    let saldo = data.rekap - data.totalPengeluaran;
+                    let lapSaldo = document.getElementById('lapSaldo');
+                    lapSaldo.innerText = formatRupiahJS(saldo);
+                    lapSaldo.style.color = saldo >= 0 ? "#16a34a" : "#dc2626";
+
+                    let statusKondisi = document.getElementById('lapStatusKondisi');
+                    if (saldo < 0) {
+                        statusKondisi.innerText = "Defisit (Pengeluaran melebihi pemasukan)";
+                        statusKondisi.style.color = "#dc2626";
+                    } else {
+                        statusKondisi.innerText = "Surplus / Seimbang (Keuangan sehat)";
+                        statusKondisi.style.color = "#16a34a";
+                    }
+                })
+                .catch(err => console.error("Gagal mengambil data laporan:", err));
+        }
+        loadDataLaporan();
+
+        // Fungsi unduh PDF khusus halaman ini
+        function downloadPDF() {
+            var element = document.getElementById('areaLaporan');
+            var opt = {
+                margin:       10,
+                filename:     'Laporan_Manajemen_Air_Warga.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().from(element).set(opt).save();
+        }
+    </script>
+</body>
+</html>
