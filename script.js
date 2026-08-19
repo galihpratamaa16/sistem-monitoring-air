@@ -132,6 +132,12 @@ function updateStatusSistem() {
             if(jatuhTempoEl && data.dueStr) {
                 jatuhTempoEl.innerText = data.dueStr;
             }
+
+            // Update Data Warga (Jumlah Pemakaian dalam Liter)
+            let pemR1 = document.getElementById('pemakaianR1');
+            let pemR2 = document.getElementById('pemakaianR2');
+            if(pemR1 && data.liter_0 !== undefined) pemR1.innerText = Number(data.liter_0).toFixed(2);
+            if(pemR2 && data.liter_1 !== undefined) pemR2.innerText = Number(data.liter_1).toFixed(2);
         })
         .catch(() => {});
 }
