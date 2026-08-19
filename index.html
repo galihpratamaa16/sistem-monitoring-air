@@ -20,6 +20,7 @@
         <a href='#keuangan'>Laporan Keuangan</a>
         <a href='#datawarga'>Data Warga</a>
         <a href='#statistik'>Statistik Keuangan</a>
+        <a href='laporan.html'>Laporan Fisik</a>
     </div>
 
     <div class='main'>
@@ -277,5 +278,82 @@
     </div>
 
     <script src='script.js'></script>
+
+    <!-- TEMPLATE KHUSUS CETAK LAPORAN PDF (Ukuran A4) -->
+    <div id="pdf-report" style="position: absolute; top: 0; left: 0; opacity: 0; pointer-events: none; z-index: -999; width: 210mm; padding: 15mm; background: white; color: black; font-family: Arial, sans-serif;">
+        
+        <!-- Kop Surat -->
+        <div style="text-align: center; border-bottom: 3px double #0f172a; padding-bottom: 12px; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #0f172a; font-size: 22px; text-transform: uppercase;">Laporan Manajemen Air Warga</h2>
+            <p style="margin: 5px 0 0; font-size: 14px; color: #555;">Pusat Kontrol, Tagihan, & Rekapitulasi Keuangan Air Bersih</p>
+        </div>
+
+        <!-- Bagian 1: Harga & Tagihan Air Warga -->
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: #1565C0; font-size: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px; margin-bottom: 10px;">1. Informasi Harga & Tagihan Air Warga</h3>
+            <p style="margin: 5px 0 10px; font-size: 13px;"><b>Tarif Dasar Air:</b> <span id="pdfTeksHarga">Rp 5.000 / m³</span></p>
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead>
+                    <tr style="background: #f1f5f9;">
+                        <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">ID Rumah</th>
+                        <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">Nama Warga</th>
+                        <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">Volume (m³)</th>
+                        <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">Total Tagihan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px;">Rumah 1</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px;">Kepala Keluarga 1</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px;" id="pdfM3_0">0.000 m³</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px;" id="pdfTagihan_0">Rp 0</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px;">Rumah 2</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px;">Kepala Keluarga 2</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px;" id="pdfM3_1">0.000 m³</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px;" id="pdfTagihan_1">Rp 0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Bagian 2: Laporan Keuangan -->
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: #1565C0; font-size: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px; margin-bottom: 10px;">2. Laporan Keuangan & Neraca Saldo</h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <tr>
+                    <td style="border: 1px solid #cbd5e1; padding: 8px; width: 60%;"><b>Total Pemasukan (Rekap):</b></td>
+                    <td style="border: 1px solid #cbd5e1; padding: 8px; color: #16a34a; font-weight: bold;" id="pdfRekap">Rp 0</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #cbd5e1; padding: 8px;"><b>Total Pengeluaran:</b></td>
+                    <td style="border: 1px solid #cbd5e1; padding: 8px; color: #dc2626; font-weight: bold;" id="pdfPengeluaran">Rp 0</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #cbd5e1; padding: 8px;"><b>Saldo / Neraca Berjalan:</b></td>
+                    <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;" id="pdfSaldo">Rp 0</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Bagian 3: Statistik Keuangan -->
+        <div style="margin-bottom: 30px;">
+            <h3 style="color: #1565C0; font-size: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px; margin-bottom: 10px;">3. Statistik & Ringkasan Keuangan</h3>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 13px;">
+                <p style="margin: 4px 0;">• <b>Status Perbandingan:</b> Arus kas antara total pemasukan dan pengeluaran tercatat aktif.</p>
+                <p style="margin: 4px 0;">• <b>Kondisi Saldo:</b> <span id="pdfStatusKondisi">Aman / Surplus</span></p>
+            </div>
+        </div>
+
+        <!-- Tanda Tangan / Footer Laporan -->
+        <div style="margin-top: 30px; display: flex; justify-content: flex-end; font-size: 13px;">
+            <div style="text-align: center; width: 200px;">
+                <p style="margin: 0;">Pengurus Manajemen Air</p>
+                <br><br><br>
+                <p style="margin: 0; font-weight: bold; border-bottom: 1px solid #000; display: inline-block; width: 160px;"></p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
