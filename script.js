@@ -1,6 +1,64 @@
 // Alamat IP ESP32 Master Anda
 const ESP_IP = "http://192.168.88.90";
 
+let grafikKeuangan = null;
+
+function formatRupiahJS(nilai) {
+    let isNeg = nilai < 0;
+    let angka = Math.abs(Math.round(nilai));
+    if (angka === 0) return "Rp 0";
+    let rev = angka.toString().split('').reverse().join('');
+    let ribuan = '';
+    for (let i = 0; i < rev.length; i++) {
+        ribuan += rev[i];
+        if ((i + 1) % 3 === 0 && (i + 1) !== rev.length) ribuan += '.';
+    }
+    let hasil = ribuan.split('').reverse().join('');
+    return (isNeg ? "-Rp " : "Rp ") + hasil;
+}
+
+function initGrafik(pemasukan, pengeluaran) {
+                const canvasEl = document.getElementById('grafikKeuangan');
+                if (!canvasEl) return;
+                const ctx = document.getElementById('grafikKeuangan').getContext('2d');
+                if (grafikKeuangan) {
+                    grafikKeuangan.destroy(); // Hancurkan grafik lama jika ada sebelum dibuat ulang
+                }
+                
+                grafikKeuangan = new Chart(ctx, {
+                    type: 'bar', // Bisa diganti 'pie' atau 'doughnut' jika ingin bentuk lingkaran
+                    data: {
+                        labels: ['Pemasukan', 'Pengeluaran'],
+                        datasets: [{
+                            label: 'Jumlah (Rp)',
+                            data: [pemasukan, pengeluaran],
+                            backgroundColor: [
+                                'rgba(22, 163, 74, 0.7)',   // Hijau untuk Pemasukan
+                                'rgba(220, 38, 38, 0.7)'    // Merah untuk Pengeluaran
+                            ],
+                            borderColor: [
+                                'rgba(22, 163, 74, 1)',
+                                'rgba(220, 38, 38, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
 function formatRupiahJS(nilai) {
     let isNeg = nilai < 0;
     let angka = Math.abs(Math.round(nilai));
@@ -114,6 +172,15 @@ function updateStatusSistem() {
             if(neracaSaldo) {
                 neracaSaldo.innerText = formatRupiahJS(saldoBerjalan);
                 neracaSaldo.style.color = saldoBerjalan >= 0 ? "#16a34a" : "#dc2626";
+            }
+
+            // Update Grafik
+            if (typeof window.grafikInisialisasi === 'undefined') {
+                initGrafik(data.rekap, data.totalPengeluaran);
+                window.grafikInisialisasi = true;
+            } else if (grafikKeuangan) {
+                grafikKeuangan.data.datasets[0].data = [data.rekap, data.totalPengeluaran];
+                grafikKeuangan.update();
             }
 
             // Update Tagihan Air Rumah 1 & 2
