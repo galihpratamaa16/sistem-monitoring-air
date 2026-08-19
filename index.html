@@ -6,6 +6,7 @@
     <title>MASTER PANEL</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -17,7 +18,8 @@
         <a href='#ip'>IP Slave</a>
         <a href='#listrik'>Listrik</a>
         <a href='#keuangan'>Laporan Keuangan</a>
-        <a hreef='#datawarga'>Data Warga</a>
+        <a href='#datawarga'>Data Warga</a>
+        <a href='#statistik'>Statistik Keuangan</a>
     </div>
 
     <div class='main'>
@@ -260,6 +262,15 @@
                             <td><span id='pemakaianR2'>0.00</span> Liter</td>
                         </tr>
                     </table>
+                </div>
+
+                <!-- Statistik Keuangan -->
+                <div class='card card-wide' id='statistik'>
+                    <h2>Statistik Keuangan</h2>
+                    <p>Grafik perbandingan total pemasukan dan pengeluaran keuangan warga.</p>
+                    <div style="width: 100%; max-width: 450px; margin: 20px auto;">
+                        <canvas id="grafikKeuangan"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
