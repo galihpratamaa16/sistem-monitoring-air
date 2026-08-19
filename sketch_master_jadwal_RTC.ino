@@ -163,10 +163,26 @@ void kirimModeContactor1(uint16_t mode) { MBContactor1.addRequest(millis(), 1, 6
 void kirimRelayContactor1(uint16_t relay) { MBContactor1.addRequest(millis(), 1, 6, 1, relay); }
 void handleError(Error error, uint32_t token) {}
 
+time_t getDueEpoch()
+{
+    struct tm t = {0};
+    t.tm_year = dueYear - 1900;
+    t.tm_mon = dueMonth - 1;
+    t.tm_mday = dueDay;
+    t.tm_hour = dueHour;
+    t.tm_min = dueMinute;
+    t.tm_sec = 0;
+    return mktime(&t);
+}
+
 // API Status & Data untuk Frontend Terpisah
 void handleStatusAPI() {
     char dueStr[32];
     snprintf(dueStr, sizeof(dueStr), "%04d-%02d-%02d %02d:%02d", dueYear, dueMonth, dueDay, dueHour, dueMinute);
+
+    time_t currentTime = time(nullptr);
+    time_t dueTime = getDueEpoch();
+    float totalTunggakan = (currentTime > dueTime && currentTime > 1000000000) ? totalTagihanBulan : 0.0;
 
     String json = "{";
     json += "\"modeMaster\":" + String(modeMaster1);
@@ -184,6 +200,7 @@ void handleStatusAPI() {
     json += ",\"m3_1\":" + String(totalM3[1], 3);
     json += ",\"tagihan_1\":" + String(totalTagihan[1], 2);
     json += ",\"dueStr\":\"" + String(dueStr) + "\"";
+    json += ",\"tunggakan\":" + String(totalTunggakan, 2);
     json += "}";
     
     sendCORS(200, "application/json", json);
