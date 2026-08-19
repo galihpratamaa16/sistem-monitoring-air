@@ -165,6 +165,9 @@ void handleError(Error error, uint32_t token) {}
 
 // API Status & Data untuk Frontend Terpisah
 void handleStatusAPI() {
+    char dueStr[32];
+    snprintf(dueStr, sizeof(dueStr), "%04d-%02d-%02d %02d:%02d", dueYear, dueMonth, dueDay, dueHour, dueMinute);
+
     String json = "{";
     json += "\"modeMaster\":" + String(modeMaster1);
     json += ",\"statusPompa\":" + String(statusPompa1);
@@ -180,7 +183,9 @@ void handleStatusAPI() {
     json += ",\"tagihan_0\":" + String(totalTagihan[0], 2);
     json += ",\"m3_1\":" + String(totalM3[1], 3);
     json += ",\"tagihan_1\":" + String(totalTagihan[1], 2);
+    json += ",\"dueStr\":\"" + String(dueStr) + "\"";
     json += "}";
+    
     sendCORS(200, "application/json", json);
 }
 
