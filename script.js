@@ -115,6 +115,7 @@ function updateStatusSistem() {
                 neracaSaldo.innerText = formatRupiahJS(saldoBerjalan);
                 neracaSaldo.style.color = saldoBerjalan >= 0 ? "#16a34a" : "#dc2626";
             }
+
             // Update Tagihan Air Rumah 1 & 2
             let m3_0 = document.getElementById('m3_0');
             let tagihan_0 = document.getElementById('tagihan_0');
@@ -125,6 +126,12 @@ function updateStatusSistem() {
             let tagihan_1 = document.getElementById('tagihan_1');
             if(m3_1) m3_1.innerText = Number(data.m3_1).toFixed(3) + " m³";
             if(tagihan_1) tagihan_1.innerText = formatRupiahJS(data.tagihan_1);
+
+            // Update Jatuh Tempo Aktif
+            let jatuhTempoEl = document.getElementById('valJatuhTempoStr');
+            if(jatuhTempoEl && data.dueStr) {
+                jatuhTempoEl.innerText = data.dueStr;
+            }
         })
         .catch(() => {});
 }
