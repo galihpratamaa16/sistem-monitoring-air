@@ -1,0 +1,18 @@
+{
+  "name": "aklab",
+  "version": "1.0.0",
+  "description": "Pengelolaan 2 sumur bor, 1 toren distribusi, panel kontrol pompa, monitoring listik, monitoring debit air, metering 30 rumah, tagihan, dan laporan keuangan komunitas.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.3.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mysql2": "^3.23.3"
+  }
+}
