@@ -1,3 +1,8 @@
+// Pengaman: Jika belum login, paksa kembali ke halaman login
+if (localStorage.getItem('isLoggedIn') !== 'true') {
+    window.location.href = 'login.html';
+}
+
 // Alamat IP ESP32 Master Anda
 const ESP_IP = "http://192.168.88.90";
 
@@ -305,4 +310,11 @@ function downloadPDF() {
 
     // 4. Proses dan unduh PDF langsung
     html2pdf().from(element).set(opt).save();
+}
+
+function logout() {
+    if (confirm("Apakah Anda yakin ingin keluar?")) {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
 }
