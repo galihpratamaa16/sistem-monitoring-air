@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static(__dirname));
 
 // Koneksi ke Database MySQL di Laragon
 const db = mysql.createConnection({
@@ -40,6 +41,6 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log("Server backend berjalan di http://localhost:3000");
+app.listen(80, () => {
+    console.log("Server backend berjalan di http://localhost:80");
 });
