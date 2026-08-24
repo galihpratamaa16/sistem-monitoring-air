@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan Sistem - Manajemen Air Warga</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Sidebar Navigasi -->
+    <div class='sidebar'>
+        <h2>AIR WARGA</h2>
+        <a href='index.html#dashboard'>Dashboard</a>
+        <a href='laporan.html'>Laporan Fisik</a>
+        <a href='pengaturan.html' style='background:#1e3a8a;'><b>Pengaturan Sistem</b></a>
+        <a href='#' onclick='logout()' style='background:#dc2626; margin-top:30px; text-align:center;'><b>Logout</b></a>
+    </div>
+
+    <!-- Konten Utama Pengaturan -->
+    <div class='main'>
+        <div class='header'>
+            <h1>PENGATURAN & PEMELIHARAAN SISTEM</h1>
+            <p>Konfigurasi Lanjutan, Status Kesehatan Mesin, & Deteksi Dini Anomali</p>
+        </div>
+
+        <div class='container'>
+            <!-- Fitur 1: Runtime-Based Maintenance -->
+            <div class='card'>
+                <h2>Pemeliharaan Pompa (Maintenance)</h2>
+                <p>Memantau akumulasi waktu kerja mesin pompa untuk penjadwalan servis berkala.</p>
+                <table>
+                    <tr><td><b>Total Waktu Kerja</b></td><td><span id='setJamOp'>0 Jam 0 Menit</span></td></tr>
+                    <tr><td><b>Batas Servis Rutin</b></td><td><span id='setBatasServis'>2 Jam 0 Menit</span></td></tr>
+                    <tr><td><b>Status Mesin</b></td><td><span id='setStatusServis' class='green'>Normal</span></td></tr>
+                </table>
+                <br>
+                
+                <!-- Form Input Jam & Menit Terpisah -->
+                <form onsubmit="kirimFormPengaturan(event, '/saveBatasServis')">
+                    <label><small>Atur Batas Servis Baru:</small></label>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <input type='number' name='jam' min='0' placeholder='Jam' required style='width: 50%; padding: 6px;'>
+                        <input type='number' name='menit' min='0' max='59' placeholder='Menit' required style='width: 50%; padding: 6px;'>
+                    </div>
+                    <button type='submit' style='width:100%; height:35px; background:#1976D2; color:white; border:none; border-radius:4px; cursor:pointer;'>Simpan Batas Servis</button>
+                </form>
+                <br>
+                <button type='button' onclick="kirimAksi('/resetServis')" style='background:#f97316; width:100%; color:white; border:none; border-radius:4px; padding:6px; cursor:pointer;'>Reset Waktu Servis</button>
+            </div>
+
+            <!-- Fitur 2: Smart Leak Detection -->
+            <div class='card'>
+                <h2>Deteksi Kebocoran Pipa (Leak Detection)</h2>
+                <p>Peringatan otomatis jika aliran air terdeteksi saat pompa dalam kondisi mati.</p>
+                <table>
+                    <tr><td><b>Status Deteksi</b></td><td><span id='setStatusBocor' class='green'>Aman (Tidak Ada Kebocoran)</span></td></tr>
+                    <tr><td><b>Debit Saat Pompa OFF</b></td><td><span id='setFlowLeak'>0.00</span> L/min</td></tr>
+                </table>
+                <br>
+                <div style='background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:6px; font-size:13px;'>
+                    <p style='margin:0; color:#475569;'><b>Info:</b> Sistem akan aktif memonitor anomali air setiap kali kontaktor pompa mati.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ESP_IP = "http://192.168.88.90";
+
+        // Cek Login Pengaman
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'index.html';
+        }
+
+        function kirimAksi(endpoint) {
+            fetch(ESP_IP + endpoint)
+                .then(() => {
+                    alert("Perintah berhasil dikirim!");
+                    loadDataPengaturan();
+                })
+                .catch(err => alert("Gagal terhubung ke ESP32."));
+        }
+
+       function loadDataPengaturan() {
+            fetch(ESP_IP + '/api/status')
+                .then(r => r.json())
+                .then(data => {
+                    // Tampilkan dengan format Jam & Menit
+                    document.getElementById('setJamOp').innerText = formatWaktu(data.menitOperasional || 0);
+                    document.getElementById('setBatasServis').innerText = formatWaktu(data.batasServis || 120);
+                    
+                    let statusServis = document.getElementById('setStatusServis');
+                    if (data.menitOperasional >= (data.batasServis || 120)) {
+                        statusServis.innerText = "Waktunya Servis!";
+                        statusServis.className = "red";
+                    } else {
+                        statusServis.innerText = "Normal / Sehat";
+                        statusServis.className = "green";
+                    }
+
+                    // Status Leak Detection
+                    let statusBocor = document.getElementById('setStatusBocor');
+                    let flowLeak = document.getElementById('setFlowLeak');
+                    if(data.statusBocor == 1) {
+                        statusBocor.innerText = "BAHAYA: Terindikasi Kebocoran Pipa!";
+                        statusBocor.className = "red";
+                    } else {
+                        statusBocor.innerText = "Aman (Tidak Ada Kebocoran)";
+                        statusBocor.className = "green";
+                    }
+                    if(data.flowLeakVal !== undefined) {
+                        flowLeak.innerText = Number(data.flowLeakVal).toFixed(2);
+                    }
+
+                    // --- LOGIKA NOTIFICATION BADGE SIDEBAR ---
+                    let badge = document.getElementById('sidebarBadge');
+                    if (badge) {
+                        let perluServis = (data.menitOperasional >= (data.batasServis || 120));
+                        let adaBocor = (data.statusBocor == 1);
+                        
+                        if (perluServis || adaBocor) {
+                            badge.style.display = 'inline-block';
+                            if (adaBocor && perluServis) {
+                                badge.innerText = 'BOCOR & SERVIS';
+                            } else if (adaBocor) {
+                                badge.innerText = 'BOCOR!';
+                            } else {
+                                badge.innerText = 'SERVIS!';
+                            }
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                })
+                .catch(err => console.error("Gagal memuat data pengaturan:", err));
+        }
+
+        // Ambil data secara berkala setiap 3 detik
+        setInterval(loadDataPengaturan, 3000);
+        loadDataPengaturan();
+
+        function logout() {
+            if (confirm("Apakah Anda yakin ingin keluar?")) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        function kirimFormPengaturan(event, endpoint) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const params = new URLSearchParams(formData).toString();
+            
+            fetch(ESP_IP + endpoint + '?' + params)
+                .then(() => {
+                    alert("Batas servis berhasil diperbarui!");
+                    loadDataPengaturan();
+                    event.target.reset();
+                })
+                .catch(err => alert("Gagal mengirim data ke ESP32."));
+        }
+
+        // Fungsi helper untuk mengubah total menit menjadi format "X Jam Y Menit"
+function formatWaktu(totalMenit) {
+    let jam = Math.floor(totalMenit / 60);
+    let menit = Math.round(totalMenit % 60);
+    if (jam > 0) {
+        return `${jam} Jam ${menit} Menit`;
+    } else {
+        return `${menit} Menit`;
+    }
+}
+
+function loadDataPengaturan() {
+    fetch(ESP_IP + '/api/status')
+        .then(r => r.json())
+        .then(data => {
+            // Tampilkan dengan format Jam & Menit
+            document.getElementById('setJamOp').innerText = formatWaktu(data.menitOperasional || 0);
+            document.getElementById('setBatasServis').innerText = formatWaktu(data.batasServis || 120);
+            
+            let statusServis = document.getElementById('setStatusServis');
+            if (data.menitOperasional >= (data.batasServis || 120)) {
+                statusServis.innerText = "Wajib Servis!";
+                statusServis.className = "red";
+            } else {
+                statusServis.innerText = "Normal / Sehat";
+                statusServis.className = "green";
+            }
+
+            // Status Leak Detection tetap seperti sebelumnya
+            let statusBocor = document.getElementById('setStatusBocor');
+            let flowLeak = document.getElementById('setFlowLeak');
+            if(data.statusBocor == 1) {
+                statusBocor.innerText = "BAHAYA: Terindikasi Kebocoran Pipa!";
+                statusBocor.className = "red";
+            } else {
+                statusBocor.innerText = "Aman (Tidak Ada Kebocoran)";
+                statusBocor.className = "green";
+            }
+            if(data.flowLeakVal !== undefined) {
+                flowLeak.innerText = Number(data.flowLeakVal).toFixed(2);
+            }
+        })
+        .catch(err => console.error("Gagal memuat data pengaturan:", err));
+}
+    </script>
+</body>
+</html>

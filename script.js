@@ -210,6 +210,26 @@ function updateStatusSistem() {
             let pemR2 = document.getElementById('pemakaianR2');
             if(pemR1 && data.liter_0 !== undefined) pemR1.innerText = Number(data.liter_0).toFixed(2);
             if(pemR2 && data.liter_1 !== undefined) pemR2.innerText = Number(data.liter_1).toFixed(2);
+
+            // --- LOGIKA NOTIFICATION BADGE SIDEBAR ---
+            let badge = document.getElementById('sidebarBadge');
+            if (badge) {
+                let perluServis = (data.menitOperasional >= (data.batasServis || 120));
+                let adaBocor = (data.statusBocor == 1);
+                
+                if (perluServis || adaBocor) {
+                    badge.style.display = 'inline-block';
+                    if (adaBocor && perluServis) {
+                        badge.innerText = 'BOCOR & SERVIS';
+                    } else if (adaBocor) {
+                        badge.innerText = 'BOCOR!';
+                    } else {
+                        badge.innerText = 'SERVIS!';
+                    }
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
         })
         .catch(() => {});
 }
