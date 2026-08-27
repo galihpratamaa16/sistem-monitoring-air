@@ -28,3 +28,130 @@ button:hover{background:#0D47A1;}
 input, select{width:100%;padding:8px;margin-top:5px;margin-bottom:10px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;}
 
 @media(max-width:768px){.card-wide{grid-column:span 1;}.main{margin-left:0;padding:10px;}.sidebar{display:none;}}
+
+/* --- REVISI BENTUK TORN AIR --- */
+.torn-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+}
+
+/* Tutup Atas Torn */
+.torn-cap {
+    width: 38px;
+    height: 10px;
+    background: #334155;
+    border-radius: 5px 5px 0 0;
+    border: 2px solid #475569;
+    border-bottom: none;
+}
+
+/* Badan Silinder & Kubah Atas Torn Air */
+.torn-body {
+    width: 90px;
+    height: 160px;
+    border: 3px solid #334155;
+    border-radius: 26px 26px 12px 12px; /* Kubah khas torn air */
+    position: relative;
+    overflow: hidden;
+    background: #0f172a;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Ketinggian Air */
+.water-level {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--water-color, #00d2ff);
+    transition: height 0.8s ease-in-out, background-color 0.5s ease;
+}
+
+/* Garis-Garis Sabuk Tekstur Torn Air */
+.torn-ribs {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 24px,
+        rgba(255, 255, 255, 0.1) 24px,
+        rgba(0, 0, 0, 0.25) 27px
+    );
+}
+
+/* Kaki Penyangga */
+.torn-stand {
+    display: flex;
+    justify-content: space-between;
+    width: 70px;
+    margin-top: 2px;
+}
+
+.stand-leg {
+    width: 10px;
+    height: 10px;
+    background: #334155;
+    border-radius: 0 0 4px 4px;
+}
+
+.tank-cap-label { position: absolute; top: 12px; right: 6px; font-size: 9px; color: #94a3b8; font-weight: bold; }
+.tank-zero-label { position: absolute; bottom: 6px; right: 6px; font-size: 9px; color: #94a3b8; font-weight: bold; }
+
+/* --- HAMBURGER MENU & OVERLAY BASE --- */
+.menu-toggle {
+    display: none; /* Sembunyikan di layar laptop/desktop */
+    background: #0f172a;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+}
+
+/* --- PERBAIKAN RESPONSIVE MOBILE (< 768px) --- */
+@media(max-width:768px){
+    .card-wide { grid-column: span 1; }
+    .main { margin-left: 0; padding: 15px; }
+    
+    /* Tampilkan tombol menu di HP */
+    .menu-toggle { display: inline-block; }
+
+    /* Ubah sidebar menjadi slide-out di HP */
+    .sidebar {
+        left: -260px; /* Sembunyikan ke kiri luar layar */
+        transition: left 0.3s ease-in-out;
+        z-index: 999;
+        display: block !important;
+    }
+
+    /* Tampilkan sidebar saat status aktif */
+    .sidebar.active {
+        left: 0;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.4);
+    }
+
+    /* Tampilkan overlay saat sidebar terbuka */
+    .sidebar-overlay.active {
+        display: block;
+    }
+}

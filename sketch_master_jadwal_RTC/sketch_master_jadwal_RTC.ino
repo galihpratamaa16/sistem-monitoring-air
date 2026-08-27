@@ -41,6 +41,11 @@ const float KAPASITAS_TORN = 15.0;
 uint16_t nilaiTDS = 0, statusAir = 0;
 
 uint16_t modePompa1 = 0, statusPompa1 = 0, modeMaster1 = 1, relayMaster1 = 0;
+
+uint32_t totalRam = 0;
+uint32_t freeRam = 0;
+uint32_t usedRam = 0;
+
 Preferences prefs;
 // --- TAMBAHAN FITUR MAINTENANCE & LEAK DETECTION ---
 unsigned long pompaStartMillis = 0;
@@ -256,6 +261,9 @@ void handleStatusAPI() {
   json += ",\"batasServis\":" + String(batasServisMenit, 1);
   json += ",\"statusBocor\":" + String(terindikasiBocor ? 1 : 0);
   json += ",\"flowLeakVal\":" + String(lastFlowWhenOff, 2);
+  json += ",\"ramTotal\":" + String(totalRam);
+  json += ",\"ramUsed\":" + String(usedRam);
+  json += ",\"ramFree\":" + String(freeRam);
   json += "}";
 
   sendCORS(200, "application/json", json);
@@ -554,6 +562,26 @@ void loop() {
         kirimRelayContactor1(1);
       }
     }
+  }
+
+  // --- MONITORING RAM ESP32 ---
+  static unsigned long lastRamCheck = 0;
+  if (millis() - lastRamCheck >= 5000) { // Cek setiap 5 detik
+    lastRamCheck = millis();
+    
+    totalRam = ESP.getHeapSize();
+    freeRam = ESP.getFreeHeap();
+    usedRam = totalRam - freeRam;
+    float persenUsed = ((float)usedRam / totalRam) * 100.0;
+
+    Serial.print("[RAM] Total: ");
+    Serial.print(totalRam);
+    Serial.print(" bytes | Terpakai: ");
+    Serial.print(usedRam);
+    Serial.print(" bytes (");
+    Serial.print(persenUsed, 1);
+    Serial.print("%) | Sisa Free: ");
+    Serial.println(freeRam);
   }
 
   delay(200);

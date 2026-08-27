@@ -239,20 +239,46 @@ function updateUSTDS(){
     fetch(ESP_IP + '/api/ustds')
         .then(r => r.json())
         .then(data => {
-            let el = document.getElementById('webLevelAir'); if(el) el.innerText = Number(data.level).toFixed(1);
-            let elD = document.getElementById('webLevelAirDetail'); if(elD) elD.innerText = Number(data.level).toFixed(1);
-            let elT = document.getElementById('webTotalAir'); if(elT) elT.innerText = ((Number(data.level) / 100) * 15).toFixed(2);
-            let elJ = document.getElementById('webJarakAir'); if(elJ) elJ.innerText = Number(data.jarak).toFixed(2);
-            let elTds = document.getElementById('webTDS'); if(elTds) elTds.innerText = data.tds;
-            
-            let statusAirEl = document.getElementById('webStatusAir');
-            if(statusAirEl) {
-                switch(data.status) {
-                    case 0: statusAirEl.innerHTML = "<span class='green'>Sangat Baik</span>"; break;
-                    case 1: statusAirEl.innerHTML = "<span class='blue'>Baik</span>"; break;
-                    case 2: statusAirEl.innerHTML = "<span class='orange'>Buruk</span>"; break;
-                    case 3: statusAirEl.innerHTML = "<span class='red'>Buruk Sekali</span>"; break;
-                    default: statusAirEl.innerHTML = "-"; break;
+            let levelVal = Number(data.level) || 0;
+            let tdsVal = Number(data.tds) || 0;
+            let jarakVal = Number(data.jarak) || 0;
+
+            // 1. Update elemen angka statis
+            let el = document.getElementById('webLevelAir'); if(el) el.innerText = levelVal.toFixed(1);
+            let elD = document.getElementById('webLevelAirDetail'); if(elD) elD.innerText = levelVal.toFixed(1);
+            let elT = document.getElementById('webTotalAir'); if(elT) elT.innerText = ((levelVal / 100) * 15).toFixed(2);
+            let elJ = document.getElementById('webJarakAir'); if(elJ) elJ.innerText = jarakVal.toFixed(2);
+            let elTds = document.getElementById('webTDS'); if(elTds) elTds.innerText = tdsVal;
+
+            // 2. LOGIKA TORN TWIN VISUALIZER
+            let ttWater = document.getElementById('ttWaterLevel');
+            let ttBadge = document.getElementById('ttBadgeTDS');
+
+            if (ttWater) {
+                // Batasi level antara 0% - 100%
+                let clampedLevel = Math.min(Math.max(levelVal, 0), 100);
+                ttWater.style.height = clampedLevel + '%';
+
+                // Tentukan Warna Air & Text Badge berdasarkan TDS
+                let waterColor = "#00d2ff"; // Default Biru Segar
+                let statusText = "Sangat Baik";
+                let badgeClass = "bg-good";
+
+                if (tdsVal > 500) {
+                    waterColor = "#dc2626"; // Merah
+                    statusText = "Keruh / Buruk";
+                    badgeClass = "bg-bad";
+                } else if (tdsVal > 300) {
+                    waterColor = "#f97316"; // Orange
+                    statusText = "Sedang / Layak";
+                    badgeClass = "bg-medium";
+                }
+
+                ttWater.style.setProperty('--water-color', waterColor);
+
+                if (ttBadge) {
+                    ttBadge.innerText = statusText;
+                    ttBadge.className = 'badge ' + badgeClass;
                 }
             }
         }).catch(() => {});
@@ -338,3 +364,20 @@ function logout() {
         window.location.href = 'login.html';
     }
 }
+
+// --- LOGIKA NAVIGASI MOBILE ---
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (sidebar) sidebar.classList.toggle('active');
+    if (overlay) overlay.classList.toggle('active');
+}
+
+// Tutup sidebar otomatis ketika salah satu menu di-klik (layar HP)
+document.querySelectorAll('.sidebar a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+    });
+});

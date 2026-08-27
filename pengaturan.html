@@ -8,6 +8,7 @@
 </head>
 <body>
     <!-- Sidebar Navigasi -->
+     <div class="sidebar-overlay" id="sidebarOverlay" onClick="toggleSidebar()"></div>
     <div class='sidebar'>
         <h2>AIR WARGA</h2>
         <a href='index.html#dashboard'>Dashboard</a>
@@ -18,6 +19,9 @@
 
     <!-- Konten Utama Pengaturan -->
     <div class='main'>
+        <button class="menu-toggle" onClick="toggleSidebar()">
+            &#9776; Menu
+        </button>
         <div class='header'>
             <h1>PENGATURAN & PEMELIHARAAN SISTEM</h1>
             <p>Konfigurasi Lanjutan, Status Kesehatan Mesin, & Deteksi Dini Anomali</p>
@@ -50,7 +54,7 @@
 
             <!-- Fitur 2: Smart Leak Detection -->
             <div class='card'>
-                <h2>Deteksi Kebocoran Pipa (Leak Detection)</h2>
+                <h2>Deteksi Kebocoran Pipa</h2>
                 <p>Peringatan otomatis jika aliran air terdeteksi saat pompa dalam kondisi mati.</p>
                 <table>
                     <tr><td><b>Status Deteksi</b></td><td><span id='setStatusBocor' class='green'>Aman (Tidak Ada Kebocoran)</span></td></tr>
@@ -204,6 +208,23 @@ function loadDataPengaturan() {
         })
         .catch(err => console.error("Gagal memuat data pengaturan:", err));
 }
+
+// --- LOGIKA NAVIGASI MOBILE ---
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (sidebar) sidebar.classList.toggle('active');
+    if (overlay) overlay.classList.toggle('active');
+}
+
+// Tutup sidebar otomatis saat menu di-klik di HP
+document.querySelectorAll('.sidebar a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+    });
+});
     </script>
 </body>
 </html>

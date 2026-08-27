@@ -10,6 +10,7 @@
 </head>
 <body>
 
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class='sidebar'>
         <h2>AIR WARGA</h2>
         <a href='#dashboard'>Dashboard</a>
@@ -28,6 +29,9 @@
     </div>
 
     <div class='main'>
+        <button class="menu-toggle" onclick="toggleSidebar()">
+            &#9776; Menu
+        </button>
         <div id='laporan'>
 
             <div class='header'>
@@ -74,14 +78,41 @@
                 </div>
 
                 <!-- Torn Air -->
+                <!-- Kartu Visualisasi Torn Twin (Bentuk Torn Air Asli) -->
                 <div class='card'>
-                    <h2>Torn Air</h2>
-                    <table>
-                        <tr><td><b>Level Air</b></td><td><span id='webLevelAirDetail'>0.0</span> %</td></tr>
-                        <tr><td><b>Jarak Air</b></td><td><span id='webJarakAir'>0.00</span> cm</td></tr>
-                        <tr><td><b>TDS</b></td><td><span id='webTDS'>0</span> ppm</td></tr>
-                        <tr><td><b>Kualitas</b></td><td><span id='webStatusAir'>-</span></td></tr>
-                    </table>
+                    <h2>Kapasitas & Kualitas Air</h2>
+                    <div class="torn-twin-container" style="display: flex; gap: 20px; align-items: center; margin-top: 15px;">
+                        
+                        <!-- Tangki Visual Bentuk Torn Air -->
+                        <div class="torn-wrapper">
+                            <!-- Tutup Torn -->
+                            <div class="torn-cap"></div>
+                            
+                            <!-- Badan Tangki Torn -->
+                            <div class="torn-body">
+                                <div class="water-level" id="ttWaterLevel" style="height: 0%;"></div>
+                                <div class="torn-ribs"></div> <!-- Tekstur Garis/Sabuk Torn Air -->
+                                <span class="tank-cap-label">100%</span>
+                                <span class="tank-zero-label">0%</span>
+                            </div>
+                            
+                            <!-- Kaki Penyangga Tangki -->
+                            <div class="torn-stand">
+                                <div class="stand-leg"></div>
+                                <div class="stand-leg"></div>
+                            </div>
+                        </div>
+
+                        <!-- Detail Data & Badge -->
+                        <div style="flex: 1;">
+                            <p style="margin: 5px 0;"><b>Level Air:</b> <span id='webLevelAirDetail' style="font-size: 18px; font-weight: bold;">0.0</span> %</p>
+                            <p style="margin: 5px 0;"><b>Jarak Air:</b> <span id='webJarakAir'>0.00</span> cm</p>
+                            <p style="margin: 5px 0;"><b>TDS:</b> <span id='webTDS'>0</span> ppm</p>
+                            <p style="margin: 8px 0 0 0;"><b>Kualitas Air:</b></p>
+                            <span id="ttBadgeTDS" class="badge bg-good" style="margin-top: 4px; display: inline-block;">Memuat...</span>
+                        </div>
+
+                    </div>
                 </div>
 
                 <!-- Flow Meter -->
