@@ -23,46 +23,68 @@ function formatRupiahJS(nilai) {
 }
 
 function initGrafik(pemasukan, pengeluaran) {
-                const canvasEl = document.getElementById('grafikKeuangan');
-                if (!canvasEl) return;
-                const ctx = document.getElementById('grafikKeuangan').getContext('2d');
-                if (grafikKeuangan) {
-                    grafikKeuangan.destroy(); // Hancurkan grafik lama jika ada sebelum dibuat ulang
-                }
-                
-                grafikKeuangan = new Chart(ctx, {
-                    type: 'bar', // Bisa diganti 'pie' atau 'doughnut' jika ingin bentuk lingkaran
-                    data: {
-                        labels: ['Pemasukan', 'Pengeluaran'],
-                        datasets: [{
-                            label: 'Jumlah (Rp)',
-                            data: [pemasukan, pengeluaran],
-                            backgroundColor: [
-                                'rgba(22, 163, 74, 0.7)',   // Hijau untuk Pemasukan
-                                'rgba(220, 38, 38, 0.7)'    // Merah untuk Pengeluaran
-                            ],
-                            borderColor: [
-                                'rgba(22, 163, 74, 1)',
-                                'rgba(220, 38, 38, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
+    const canvasEl = document.getElementById('grafikKeuangan');
+    if (!canvasEl) return;
+
+    const ctx = canvasEl.getContext('2d');
+
+    if (grafikKeuangan) {
+        grafikKeuangan.destroy();
+    }
+
+    grafikKeuangan = new Chart(ctx, {
+        type: 'line',
+
+        data: {
+            labels: ['Pemasukan', 'Pengeluaran'],
+
+            datasets: [{
+                label: 'Jumlah (Rp)',
+                data: [pemasukan, pengeluaran],
+
+                borderColor: 'rgba(37, 99, 235, 1)',
+                backgroundColor: 'rgba(37, 99, 235, 0.15)',
+
+                borderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+
+                tension: 0.3,
+                fill: true
+            }]
+        },
+
+        options: {
+            responsive: true,
+
+            plugins: {
+                legend: {
+                    display: true
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Rp ' + Number(context.raw).toLocaleString('id-ID');
                         }
                     }
-                });
+                }
+            },
+
+            scales: {
+                y: {
+                    beginAtZero: true,
+
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + Number(value).toLocaleString('id-ID');
+                        }
+                    }
+                }
             }
+        }
+    });
+}
 
 function formatRupiahJS(nilai) {
     let isNeg = nilai < 0;
