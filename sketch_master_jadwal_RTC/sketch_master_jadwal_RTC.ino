@@ -51,8 +51,24 @@ Preferences prefs;
 unsigned long pompaStartMillis = 0;
 float totalMenitOperasional = 0.0;
 float batasServisMenit = 120.0;  // set awal 2 jam (120 menit)
+float batasBawahAuto = 70.0;
+float batasAtasAuto = 80.0;
 bool terindikasiBocor = false;
 float lastFlowWhenOff = 0.0;
+
+void loadAutoFill() {
+  prefs.begin("autofill", true);
+  batasBawahAuto = prefs.getFloat("b_bawah", 70.0);
+  batasAtasAuto = prefs.getFloat("b_atas", 80.0);
+  prefs.end();
+}
+
+void saveAutoFill() {
+  prefs.begin("autofill", false);
+  prefs.putFloat("b_bawah", batasBawahAuto);
+  prefs.putFloat("b_atas", batasAtasAuto);
+  prefs.end();
+}
 
 void loadMaintenance() {
   prefs.begin("maintenance", true);
@@ -259,6 +275,8 @@ void handleStatusAPI() {
   json += ",\"liter_1\":" + String(totalLiter[1], 2);
   json += ",\"menitOperasional\":" + String(totalRealtimeMenit, 1);
   json += ",\"batasServis\":" + String(batasServisMenit, 1);
+  json += ",\"batasBawahAuto\":" + String(batasBawahAuto, 1);
+  json += ",\"batasAtasAuto\":" + String(batasAtasAuto, 1);
   json += ",\"statusBocor\":" + String(terindikasiBocor ? 1 : 0);
   json += ",\"flowLeakVal\":" + String(lastFlowWhenOff, 2);
   json += ",\"ramTotal\":" + String(totalRam);
@@ -399,6 +417,15 @@ void handleSaveBatasServis() {
     sendCORS(200, "text/plain", "OK");
 }
 
+void handleSaveBatasAutoFill() {
+  if (server.hasArg("bawah") && server.hasArg("atas")) {
+    batasBawahAuto = server.arg("bawah").toFloat();
+    batasAtasAuto = server.arg("atas").toFloat();
+    saveAutoFill();
+  }
+  sendCORS(200, "text/plain", "OK");
+}
+
 void jalankanJadwal() {
   if (!jadwalAktif || modeMaster1 != 1)
     return;
@@ -441,6 +468,7 @@ void setup() {
   loadHarga();
   loadKeuangan();
   loadMaintenance();
+  loadAutoFill();
 
   WiFi.mode(WIFI_STA);
   IPAddress local_IP(192, 168, 88, 90), gateway(192, 168, 88, 1), subnet(255, 255, 255, 0);
@@ -478,6 +506,7 @@ void setup() {
   server.on("/resetNeraca", handleResetNeraca);
   server.on("/resetServis", handleResetServis);
   server.on("/saveBatasServis", handleSaveBatasServis);
+  server.on("/saveBatasAutoFill", handleSaveBatasAutoFill);
 
   server.begin();
 }
@@ -555,10 +584,10 @@ void loop() {
 
     // Logika Auto jika level air kurang/lebih dan jadwal tidak aktif
     if (modeMaster1 == 1 && !jadwalAktif) {
-      if (levelAir >= 80 && statusPompa1 == 1) {
+      if (levelAir >= batasAtasAuto && statusPompa1 == 1) {
         kirimRelayContactor1(0);
       }
-      if (levelAir <= 70 && statusPompa1 == 0) {
+      if (levelAir <= batasBawahAuto && statusPompa1 == 0) {
         kirimRelayContactor1(1);
       }
     }
