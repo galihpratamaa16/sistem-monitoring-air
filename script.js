@@ -6,7 +6,25 @@ if (localStorage.getItem('isLoggedIn') !== 'true') {
 // Alamat IP ESP32 Master Anda
 const ESP_IP = "http://192.168.88.90";
 
+let gantiKoneksiGagalCount = 0;
 let grafikKeuangan = null;
+
+function setKoneksiStatus(status) {
+    const el = document.getElementById('statusKoneksi');
+    if (!el) return;
+
+    if (status === 'ONLINE') {
+        el.innerText = 'ONLINE';
+        el.className = 'status-badge status-online';
+        gantiKoneksiGagalCount = 0; // Reset counter jika sukses
+    } else if (status === 'RECONNECTING') {
+        el.innerText = 'MENGHUBUNGKAN...';
+        el.className = 'status-badge status-reconnecting';
+    } else {
+        el.innerText = 'TERPUTUS';
+        el.className = 'status-badge status-offline';
+    }
+}
 
 function formatRupiahJS(nilai) {
     let isNeg = nilai < 0;
@@ -137,8 +155,12 @@ syncRTC();
 
 function updateStatusSistem() {
     fetch(ESP_IP + '/api/status')
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error("Gagal merespon");
+            return r.json();
+        })
         .then(data => {
+            setKoneksiStatus('ONLINE');
             // Update Mode & Status Pompa
             let modeEl = document.getElementById('webModeMasterText');
             if(modeEl) {
@@ -253,7 +275,14 @@ function updateStatusSistem() {
                 }
             }
         })
-        .catch(() => {});
+        .catch(err => {
+            gantiKoneksiGagalCount++;
+            if (gantiKoneksiGagalCount >= 3) {
+                setKoneksiStatus('OFFLINE');
+            } else {
+                setKoneksiStatus('RECONNECTING');
+            }
+        });
 }
 setInterval(updateStatusSistem, 2000);
 

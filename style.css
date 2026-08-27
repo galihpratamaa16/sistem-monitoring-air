@@ -155,3 +155,38 @@ input, select{width:100%;padding:8px;margin-top:5px;margin-bottom:10px;border:1p
         display: block;
     }
 }
+
+/* --- INDIKATOR STATUS KONEKSI REAL-TIME --- */
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.status-online {
+    background-color: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #86efac;
+}
+
+.status-offline {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+    animation: pulse-red 1.5s infinite;
+}
+
+.status-reconnecting {
+    background-color: #ffedd5;
+    color: #c2410c;
+    border: 1px solid #fdba74;
+}
+
+@keyframes pulse-red {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
