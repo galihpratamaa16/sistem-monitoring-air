@@ -1,12 +1,172 @@
-baca dulu !!
-1. file .ino sebagai backend berfungsi untuk mengkomunikasikan data dari
-    masing masing slave 
-2. index.html sebagai kerangka halaman web master
-3. script.js logika untuk komunikasi .ino dengan halaman web
+# ====================================================================
+PANDUAN INSTALASI, PEMASANGAN, DAN CARA KERJA SISTEM
+SISTEM MONITORING & KONTROL POMPA AIR KOMUNITAS (AIR WARGA)
 
-Cara debugging
-1. Sebelum ngoding backup dulu seluruh kodingan di notepad
-2. jika sudah fix push ke github
-3. Jika kodingan menjadi acak acakan setelah di run salin kembali kodingan yang ada di notepad
+1. PRASYARAT PERANGKAT LUNAK (SOFTWARE REQUIREMENTS)
 
-12345
+---
+
+Pastikan laptop/komputer tujuan telah
+terinstall aplikasi berikut:
+
+* Web Server & Database: Laragon atau XAMPP (MySQL)
+
+
+* Runtime Environment : Node.js (v14 atau versi lebih baru)
+
+
+* Code Editor / Tool   : Visual Studio Code & Arduino IDE
+* Router Wi-Fi Lokal  : Pengaturan Subnet IP 192.168.88.x
+
+
+
+2. LANGKAH INSTALASI DATABASE & BACKEND (SERVER.JS)
+
+---
+
+A. Konfigurasi Database MySQL:
+
+1. Buka phpMyAdmin melalui Laragon/XAMPP.
+
+
+2. Import database ke phpMyAdmin.
+
+
+3. Matikan web server yang terhubung ke port 80 karena web ini akan dijalankan di port 80
+   (Biasanya web server apache menggunakan port 80, jadi matikan saja)
+
+
+
+B. Memjalankan Server Backend Node.js:
+
+1. Buka Terminal / Command Prompt pada folder projek.
+
+
+2. Install dependensi modul dengan menjalankan perintah:
+npm install express mysql2 cors body-parser
+3. Jalankan server backend dengan perintah:
+node server.js
+
+
+4. Pastikan muncul pesan "Berhasil terhubung ke Database MySQL Laragon!".
+
+
+5. KONFIGURASI HARDAWARE & UPLOAD PROGRAM ESP32
+
+---
+
+1. Hubungkan ESP32 Master ke komputer menggunakan kabel data USB.
+2. Buka aplikasi Arduino IDE dan buka file sketch_master_jadwal_RTC.ino.
+
+
+3. Pastikan pustaka (libraries) berikut sudah terinstall di Arduino IDE:
+* WiFi.h
+* WebServer.h
+* ModbusClientTCPasync.h
+* Preferences.h
+
+
+
+4. Sesuaikan konfigurasi Wi-Fi pada kode program:
+
+
+* SSID     : QMS_AKLAB
+
+
+* Password : 12121212
+
+
+
+
+5. Lakukan Compile dan Upload program ke board ESP32.
+6. PEMASANGAN SKEMA JARINGAN & ALAMAT IP (IP ADDRESSING)
+
+---
+
+Seluruh perangkat harus terhubung dalam satu jaringan Wi-Fi lokal yang sama
+dengan alokasi IP Static sebagai berikut:
+
+* Router Gateway    : 192.168.88.1
+
+
+* ESP32 Master      : 192.168.88.90 (Port WebServer: 80)
+
+
+* Flow Slave        : 192.168.88.100 (Port Modbus: 502)
+
+
+* Contactor Slave   : 192.168.88.120 (Port Modbus: 502)
+
+
+* Ultrasonic Slave  : 192.168.88.130 (Port Modbus: 502)
+
+
+* PZEM Slave        : 192.168.88.140 (Port Modbus: 502)
+
+
+
+5. CARA KERJA SISTEM (SYSTEM WORKFLOW)
+
+---
+
+A. Autentikasi Pengguna & Hak Akses (Login):
+
+* Pengguna membuka halaman login melalui browser (login.html).
+
+
+* Backend (server.js) memverifikasi kredensial ke database MySQL.
+
+
+* Jika role = 'admin', pengguna diarahkan ke index.html (Master Panel
+dengan kontrol penuh terhadap saklar, jadwal, dan keuangan).
+
+
+* Jika role = 'warga', pengguna diarahkan ke warga.html (Warga Panel
+berbasis Read-Only untuk transparansi tagihan & kas).
+
+
+
+B. Komunikasi Data Real-Time:
+
+* Antarmuka web (script.js) mengirim request HTTP secara berkala (polling)
+langsung ke ESP32 Master (192.168.88.90).
+
+
+* ESP32 Master secara terpisah membaca data dari 4 Slave node via protokol
+Modbus TCP (Port 502):
+
+
+* Slave Ultrasonic/TDS: Mengukur jarak, level air torn (%), dan nilai TDS.
+
+
+* Slave Flow Meter    : Mengukur debit air (L/min) dan pemakaian warga.
+
+
+* Slave PZEM          : Mengukur arus, tegangan, daya, dan energi listrik.
+
+
+* Slave Contactor     : Membaca status sakelar & mengontrol relay pompa.
+
+
+
+
+
+C. Fitur Otomatisasi & Diagnostik:
+
+* Mode Auto-Fill  : Pompa menyala/mati otomatis berdasarkan ambang batas
+level air torn (%).
+
+
+* Penjadwalan RTC : Pompa beroperasi sesuai jam ON/OFF yang telah diset.
+
+
+* kebocoran Pipa   : Sistem mendeteksi adanya kebocoran jika sensor flow
+mencatat aliran air saat kontaktor pompa OFF.
+
+
+* Servis Berkala  : ESP32 menghitung total jam kerja mesin untuk memberikan
+notifikasi perawatan rutin.
+
+
+
+====================================================================
