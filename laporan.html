@@ -57,7 +57,7 @@
 
     <!-- Tombol Navigasi & Download -->
     <div class="action-bar">
-        <a href="index.html" class="btn btn-back">&larr; Kembali ke Dashboard</a>
+        <a href="#" onclick="kembaliKeDashboard()" class="btn btn-back">&larr; Kembali ke Dashboard</a>
         <button class="btn" onclick="downloadPDF()">Unduh Laporan (PDF)</button>
     </div>
 
@@ -200,6 +200,16 @@
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             html2pdf().from(element).set(opt).save();
+        }
+
+        function kembaliKeDashboard() {
+            const role = localStorage.getItem('userRole');
+
+            if (role == 'warga') {
+                window.location.href = 'warga.html';
+            } else {
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>

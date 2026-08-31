@@ -1,6 +1,6 @@
 *{box-sizing:border-box;font-family:Arial,sans-serif;}
 body{margin:0;background:#edf2f7;display:flex;}
-.sidebar{width:240px;height:100vh;background:#0f172a;color:white;padding:20px;position:fixed;}
+.sidebar{width:240px;height:100vh;background:#0f172a;color:white;padding:20px;position:fixed;overflow-y:auto;}
 .sidebar h2{text-align:center;}
 .sidebar a{display:block;color:white;text-decoration:none;padding:12px;margin-top:10px;border-radius:10px;background:#1e293b;}
 .sidebar a:hover{background:#334155;}
